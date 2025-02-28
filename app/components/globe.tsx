@@ -109,8 +109,25 @@ const Globe = () => {
         }}>
           Explore Solutions
         </button>
+
+     
       </div>
+       {/* Under Construction Notice */}
+       <div style={{
+        position: "absolute",
+        bottom: "20px",
+        width: "100%",
+        textAlign: "center",
+        color: "white",
+        fontWeight: "bold",
+        fontSize: "1.5rem",
+        textShadow: "0 0 10px rgba(255, 255, 255, 0.8)"
+      }}>
+        Site is under construction
+      </div>
+
     </div>
+       
   );
 };
 

@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState, useMemo, useEffect, JSX } from "react";
 import * as THREE from "three";
-import { Canvas, useFrame, extend  } from "@react-three/fiber";
+import { Canvas, useFrame, extend } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 
 // Custom shader for glowing data paths
@@ -141,7 +141,7 @@ class HologramMaterial extends THREE.ShaderMaterial {
       depthWrite: false,
       blending: THREE.AdditiveBlending,
     });
-  }   
+  }
 }
 
 // Custom material for background grid lines
@@ -152,7 +152,7 @@ class BackgroundGridMaterial extends THREE.ShaderMaterial {
         time: { value: 0 },
         resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
         primaryColor: { value: new THREE.Color("#0066ff") },
-        secondaryColor: { value: new THREE.Color("#39ff14") }, 
+        secondaryColor: { value: new THREE.Color("#39ff14") },
         gridScale: { value: 15.0 },
         pulseSpeed: { value: 0.5 },
         fadeDistance: { value: 20.0 }
@@ -234,13 +234,13 @@ extend({ DataPathMaterial, NodeMaterial, HologramMaterial, BackgroundGridMateria
 // Properly type the extended elements
 declare module "@react-three/fiber" {
   interface ThreeElements {
-    dataPathMaterial: JSX.IntrinsicElements['mesh'] 
+    dataPathMaterial: JSX.IntrinsicElements['mesh']
     nodeMaterial: JSX.IntrinsicElements['mesh'] & {
       color?: THREE.Color;
       pulseColor?: THREE.Color;
       connectionCount?: number;
     };
-    hologramMaterial: JSX.IntrinsicElements['mesh'] 
+    hologramMaterial: JSX.IntrinsicElements['mesh']
     backgroundGridMaterial: JSX.IntrinsicElements['mesh'] & {
       primaryColor?: THREE.Color;
       secondaryColor?: THREE.Color;
@@ -262,30 +262,30 @@ const FuturisticNetwork = () => {
     const connectionsArray = [];
     const lineIndicesArray = [];
     let lineIndexCounter = 0;
-    
+
     // Generate nodes in a spherical distribution
     for (let i = 0; i < nodeCount; i++) {
       const radius = 3 + Math.random() * 8;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      
+
       const x = radius * Math.sin(phi) * Math.cos(theta);
       const y = radius * Math.sin(phi) * Math.sin(theta);
       const z = radius * Math.cos(phi);
-      
+
       nodesArray.push({
         position: new THREE.Vector3(x, y, z),
         connections: 0,
         importance: Math.random(),
-        speed: 0.1 + Math.random() * 0.8,
+        speed: 0.4 + Math.random() * 0.8,
         phase: Math.random() * Math.PI * 2,
       });
     }
-    
+
     // Create connections between nodes
     for (let i = 0; i < nodeCount; i++) {
       const nodeA = nodesArray[i];
-      
+
       const neighbors = [];
       for (let j = 0; j < nodeCount; j++) {
         if (i !== j) {
@@ -296,13 +296,13 @@ const FuturisticNetwork = () => {
           }
         }
       }
-      
+
       neighbors.sort((a, b) => a.distance - b.distance);
       const connectionsToCreate = Math.min(
         Math.floor(1 + nodeA.importance * maxConnections),
         neighbors.length
       );
-      
+
       for (let k = 0; k < connectionsToCreate; k++) {
         const j = neighbors[k].index;
         if (j > i) {
@@ -313,7 +313,7 @@ const FuturisticNetwork = () => {
         }
       }
     }
-    
+
     return { nodes: nodesArray, connections: connectionsArray, lineIndices: lineIndicesArray };
   }, []);
 
@@ -323,21 +323,21 @@ const FuturisticNetwork = () => {
     const positions = new Float32Array(connections.length * 6);
     const indices = new Uint16Array(connections.length * 2);
     const lineIndexAttribute = new Float32Array(connections.length * 6);
-    
+
     connections.forEach((connection, i) => {
       const fromPos = nodes[connection.from].position;
       const toPos = nodes[connection.to].position;
-      
+
       positions[i * 6] = fromPos.x;
       positions[i * 6 + 1] = fromPos.y;
       positions[i * 6 + 2] = fromPos.z;
       positions[i * 6 + 3] = toPos.x;
       positions[i * 6 + 4] = toPos.y;
       positions[i * 6 + 5] = toPos.z;
-      
+
       indices[i * 2] = i * 2;
       indices[i * 2 + 1] = i * 2 + 1;
-      
+
       lineIndexAttribute[i * 6] = lineIndices[i];
       lineIndexAttribute[i * 6 + 1] = lineIndices[i];
       lineIndexAttribute[i * 6 + 2] = lineIndices[i];
@@ -345,11 +345,11 @@ const FuturisticNetwork = () => {
       lineIndexAttribute[i * 6 + 4] = lineIndices[i];
       lineIndexAttribute[i * 6 + 5] = lineIndices[i];
     });
-    
+
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setIndex(new THREE.BufferAttribute(indices, 1));
     geometry.setAttribute('lineIndex', new THREE.BufferAttribute(lineIndexAttribute, 1));
-    
+
     return geometry;
   }, [connections, nodes, lineIndices]);
 
@@ -361,17 +361,17 @@ const FuturisticNetwork = () => {
   // Animation for network elements
   useFrame(({ clock }) => {
     const time = clock.getElapsedTime();
-    
+
     if (dataPathMaterialRef.current) {
       dataPathMaterialRef.current.uniforms.time.value = time;
       dataPathMaterialRef.current.uniforms.flowSpeed.value = 0.4 + 0.2 * Math.sin(time * 0.2);
     }
-    
+
     if (networkRef.current) {
       networkRef.current.rotation.y = time * 0.03;
       networkRef.current.rotation.x = Math.sin(time * 0.02) * 0.1;
     }
-    
+
     nodes.forEach((node, i) => {
       const nodeMaterial = nodeMaterialRefs.current[i];
       if (nodeMaterial?.uniforms) {
@@ -384,35 +384,35 @@ const FuturisticNetwork = () => {
   return (
     <group ref={networkRef}>
       <lineSegments geometry={lineGeometry}>
-         <dataPathMaterial ref={dataPathMaterialRef} />
+        <dataPathMaterial ref={dataPathMaterialRef} />
       </lineSegments>
-      
+
       {nodes.map((node, i) => (
         <mesh key={`node-${i}`} position={node.position}>
           <sphereGeometry args={[0.04 + 0.02 * Math.min(node.connections / 3, 1), 16, 16]} />
-          <nodeMaterial 
-  ref={(ref: NodeMaterial | null) => (nodeMaterialRefs.current[i] = ref)}
-  color={new THREE.Color("#39ff14")} 
-  pulseColor={new THREE.Color("#00ffff")} 
-  connectionCount={node.connections}
-/>
+          <nodeMaterial
+            ref={(ref: NodeMaterial | null) => (nodeMaterialRefs.current[i] = ref)}
+            color={new THREE.Color("#39ff14")}
+            pulseColor={new THREE.Color("#00ffff")}
+            connectionCount={node.connections}
+          />
         </mesh>
       ))}
-      
+
       {connections.map((connection, i) => {
         if (Math.random() > 0.7) return null;
-        
+
         const fromPos = nodes[connection.from].position;
         const toPos = nodes[connection.to].position;
         const packetSpeed = 0.2 + nodes[connection.from].importance * 0.6;
-        
+
         return (
-          <DataPacket 
-            key={`packet-${i}`} 
-            startPosition={fromPos} 
-            endPosition={toPos} 
-            speed={packetSpeed} 
-            initialOffset={Math.random()} 
+          <DataPacket
+            key={`packet-${i}`}
+            startPosition={fromPos}
+            endPosition={toPos}
+            speed={packetSpeed}
+            initialOffset={Math.random()}
           />
         );
       })}
@@ -427,28 +427,28 @@ interface DataPacketProps {
   initialOffset: number;
 }
 
-const DataPacket = ({ startPosition, endPosition, speed, initialOffset }: DataPacketProps)  => {
+const DataPacket = ({ startPosition, endPosition, speed, initialOffset }: DataPacketProps) => {
   const packetRef = useRef<THREE.Mesh>(null);
   const [progress, setProgress] = useState(initialOffset);
-  
+
   useFrame(({ clock }) => {
     const time = clock.getElapsedTime();
-    
+
     setProgress((prev: number) => {
       const newProgress = (prev + speed * 0.005) % 1;
       return newProgress;
     });
-    
+
     if (packetRef.current) {
       packetRef.current.position.x = startPosition.x + (endPosition.x - startPosition.x) * progress;
       packetRef.current.position.y = startPosition.y + (endPosition.y - startPosition.y) * progress;
       packetRef.current.position.z = startPosition.z + (endPosition.z - startPosition.z) * progress;
-      
+
       const scale = 0.8 + 0.2 * Math.sin(time * 8 + initialOffset * 10);
       packetRef.current.scale.set(scale, scale, scale);
     }
   });
-  
+
   return (
     <mesh ref={packetRef}>
       <sphereGeometry args={[0.035, 8, 8]} />
@@ -457,24 +457,22 @@ const DataPacket = ({ startPosition, endPosition, speed, initialOffset }: DataPa
   );
 };
 
-// Background grid component
-const BackgroundGrid = () => {
-  const bgRef = useRef<THREE.Mesh>(null);
-  const bgMaterialRef = useRef<BackgroundGridMaterial>(null);
-  
-  return (
-    <mesh ref={bgRef} position={[0, 0, -15]}>
-      <planeGeometry args={[100, 100]} />
-      < backgroundGridMaterial 
-        ref={bgMaterialRef} 
-        primaryColor={new THREE.Color("#0066ff")} 
-        secondaryColor={new THREE.Color("#39ff14")}
-      />
-    </mesh>
-  );
-};
+// // Background grid component
+// const BackgroundGrid = () => {
+//   const bgRef = useRef<THREE.Mesh>(null);
+//   const bgMaterialRef = useRef<BackgroundGridMaterial>(null);
 
-
+//   return (
+//     <mesh ref={bgRef} position={[0, 0, -15]}>
+//       <planeGeometry args={[100, 100]} />
+//       < backgroundGridMaterial
+//         ref={bgMaterialRef}
+//         primaryColor={new THREE.Color("#0066ff")}
+//         secondaryColor={new THREE.Color("#39ff14")}
+//       />
+//     </mesh>
+//   );
+// };
 
 // Advanced globe component
 const AdvancedGlobeComponent = () => {
@@ -484,43 +482,36 @@ const AdvancedGlobeComponent = () => {
 
   useFrame(({ clock }) => {
     const time = clock.getElapsedTime();
-    
+
     if (globeRef.current) {
       globeRef.current.rotation.y = time * rotationSpeed.current;
     }
-    
+
     if (hologramMaterialRef.current) {
       hologramMaterialRef.current.uniforms.time.value = time;
- 
     }
   });
 
   return (
     <>
-     
-
-      
       <FuturisticNetwork />
-      
+
       <ambientLight intensity={1} />
       <pointLight position={[5, 3, 4]} intensity={2} color="#39ff14" />
-      
+
       <mesh ref={globeRef}>
         <sphereGeometry args={[1, 64, 64]} />
         <hologramMaterial ref={hologramMaterialRef} />
       </mesh>
-      
-     
-      
+
       <OrbitControls
         enableZoom={false}
         enablePan={false}
         enableRotate={true}
         zoomSpeed={0.6}
-    
         panSpeed={0.5}
         rotateSpeed={0.2}
-        minDistance={0.5  }
+        minDistance={0.5}
         maxDistance={5}
       />
     </>
@@ -530,7 +521,7 @@ const AdvancedGlobeComponent = () => {
 // Main component
 const Globe = () => {
   return (
-    <div style={{ 
+    <div style={{
       position: "fixed",
       top: 0,
       left: 0,
@@ -550,8 +541,8 @@ const Globe = () => {
           height: "100%",
         }}
         camera={{ position: [0, 0, 1.8], fov: 80, near: 0.1, far: 1000 }}
-        gl={{ 
-          alpha: false, 
+        gl={{
+          alpha: false,
           antialias: true,
           powerPreference: "high-performance",
         }}
@@ -589,21 +580,21 @@ const Globe = () => {
         }}>
           Global IT Solutions & Innovation
         </p>
-        <button 
-        style={{
-          padding: "1rem 2.5rem",
-          fontSize: "1.2rem",
-          background: "linear-gradient(45deg, #0066ff, #39ff14)",
-          border: "none",
-          borderRadius: "50px",
-          color: "white",
-          fontWeight: 700,
-          cursor: "pointer",
-          transition: "all 0.3s ease",
-          pointerEvents: "auto",
-          boxShadow: "0 0 30px rgba(0, 102, 255, 0.4)",
-        }}>
-          Explore Solutions
+        <button
+          style={{
+            padding: "1rem 2.5rem",
+            fontSize: "1.2rem",
+            background: "linear-gradient(45deg, #0066ff, #39ff14)",
+            border: "none",
+            borderRadius: "50px",
+            color: "white",
+            fontWeight: 700,
+            cursor: "pointer",
+            transition: "all 0.3s ease",
+            pointerEvents: "auto",
+            boxShadow: "0 0 30px rgba(0, 102, 255, 0.4)",
+          }}>
+          Explore  Solutions
         </button>
       </div>
     </div>

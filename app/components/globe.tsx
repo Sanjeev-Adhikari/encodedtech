@@ -277,7 +277,7 @@ const FuturisticNetwork = () => {
         position: new THREE.Vector3(x, y, z),
         connections: 0,
         importance: Math.random(),
-        speed: 0.6 + Math.random() * 0.8,
+
         phase: Math.random() * Math.PI * 2,
       });
     }
@@ -578,7 +578,7 @@ const Globe = () => {
           margin: "1rem 0 2rem",
           fontWeight: 300
         }}>
-          Global IT Solutions & Innovation
+          Global IT Solutions & Innovation for future
         </p>
         <button
           style={{

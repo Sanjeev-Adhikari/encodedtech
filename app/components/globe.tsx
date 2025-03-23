@@ -458,21 +458,21 @@ const DataPacket = ({ startPosition, endPosition, speed, initialOffset }: DataPa
 };
 
 // Background grid component
-const BackgroundGrid = () => {
-  const bgRef = useRef<THREE.Mesh>(null);
-  const bgMaterialRef = useRef<BackgroundGridMaterial>(null);
+// const BackgroundGrid = () => {
+//   const bgRef = useRef<THREE.Mesh>(null);
+//   const bgMaterialRef = useRef<BackgroundGridMaterial>(null);
   
-  return (
-    <mesh ref={bgRef} position={[0, 0, -15]}>
-      <planeGeometry args={[100, 100]} />
-      < backgroundGridMaterial 
-        ref={bgMaterialRef} 
-        primaryColor={new THREE.Color("#0066ff")} 
-        secondaryColor={new THREE.Color("#39ff14")}
-      />
-    </mesh>
-  );
-};
+//   return (
+//     <mesh ref={bgRef} position={[0, 0, -15]}>
+//       <planeGeometry args={[100, 100]} />
+//       < backgroundGridMaterial 
+//         ref={bgMaterialRef} 
+//         primaryColor={new THREE.Color("#0066ff")} 
+//         secondaryColor={new THREE.Color("#39ff14")}
+//       />
+//     </mesh>
+//   );
+// };
 
 // Background rays component
 const BackgroundRays = () => {
@@ -574,7 +574,7 @@ const AdvancedGlobeComponent = () => {
 
   return (
     <>
-      <BackgroundGrid />
+     
       <BackgroundRays />
       
       <FuturisticNetwork />
@@ -600,7 +600,7 @@ const AdvancedGlobeComponent = () => {
       <OrbitControls
         enableZoom={false}
         enablePan={false}
-        enableRotate={false}
+        enableRotate={true}
         zoomSpeed={0.6}
     
         panSpeed={0.5}

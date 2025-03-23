@@ -277,7 +277,7 @@ const FuturisticNetwork = () => {
         position: new THREE.Vector3(x, y, z),
         connections: 0,
         importance: Math.random(),
-        speed: 0.4 + Math.random() * 0.8,
+        speed: 0.6 + Math.random() * 0.8,
         phase: Math.random() * Math.PI * 2,
       });
     }

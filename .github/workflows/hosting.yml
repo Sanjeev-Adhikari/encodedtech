@@ -28,4 +28,3 @@ jobs:
 
       - name: Show PM2 Status
         run: pm2 status
-~

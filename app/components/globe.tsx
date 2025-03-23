@@ -474,84 +474,7 @@ const DataPacket = ({ startPosition, endPosition, speed, initialOffset }: DataPa
 //   );
 // };
 
-// Background rays component
-const BackgroundRays = () => {
-  const raysCount = 60;
-  const raysRef = useRef<THREE.Group>(null);
-  
-  const rayGeometry = useMemo(() => {
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(raysCount * 6);
-    const indices = new Uint16Array(raysCount * 2);
-    const colors = new Float32Array(raysCount * 6);
-    
-    for (let i = 0; i < raysCount; i++) {
-      const theta = Math.random() * Math.PI * 2;
-      const innerRadius = 12;
-      const outerRadius = 25;
-      
-      const startX = Math.cos(theta) * innerRadius;
-      const startY = Math.sin(theta) * innerRadius;
-      const startZ = -5;
-      
-      const endX = Math.cos(theta) * outerRadius;
-      const endY = Math.sin(theta) * outerRadius;
-      const endZ = -5;
-      
-      positions[i * 6] = startX;
-      positions[i * 6 + 1] = startY;
-      positions[i * 6 + 2] = startZ;
-      positions[i * 6 + 3] = endX;
-      positions[i * 6 + 4] = endY;
-      positions[i * 6 + 5] = endZ;
-      
-      indices[i * 2] = i * 2;
-      indices[i * 2 + 1] = i * 2 + 1;
-      
-      colors[i * 6] = 0;
-      colors[i * 6 + 1] = 0.4 + Math.random() * 0.2;
-      colors[i * 6 + 2] = 1;
-      colors[i * 6 + 3] = 0;
-      colors[i * 6 + 4] = 1;
-      colors[i * 6 + 5] = 1;
-    }
-    
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    
-    return geometry;
-  }, []);
-  
-  useFrame(({ clock }) => {
-    const time = clock.getElapsedTime();
-    
-    if (raysRef.current) {
-      raysRef.current.rotation.z = time * 0.02;
-      
-      // Use a more specific type assertion for the child object
-      const lineSegments = raysRef.current.children[0] as THREE.LineSegments;
-      if (lineSegments.material) {
-        // Now we can safely access the material property
-        const material = lineSegments.material as THREE.LineBasicMaterial;
-        material.opacity = 0.2 + 0.1 * Math.sin(time * 0.5);
-      }
-    }
-  });
-  
-  return (
-    <group ref={raysRef}>
-      <lineSegments geometry={rayGeometry}>
-        <lineBasicMaterial 
-          vertexColors
-          transparent 
-          opacity={0.3} 
-          blending={THREE.AdditiveBlending}
-        />
-      </lineSegments>
-    </group>
-  );
-};
+
 
 // Advanced globe component
 const AdvancedGlobeComponent = () => {
@@ -575,7 +498,7 @@ const AdvancedGlobeComponent = () => {
   return (
     <>
      
-      <BackgroundRays />
+
       
       <FuturisticNetwork />
       

@@ -34,7 +34,7 @@ const Services = () => {
         ];
       
         return (
-          <div style={{
+          <div id="services" style={{
             padding: "4rem 2rem",
             background: "linear-gradient(to bottom, #001030, #000510)",
             color: "white",

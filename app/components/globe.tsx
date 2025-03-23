@@ -458,21 +458,21 @@ const DataPacket = ({ startPosition, endPosition, speed, initialOffset }: DataPa
 };
 
 // Background grid component
-// const BackgroundGrid = () => {
-//   const bgRef = useRef<THREE.Mesh>(null);
-//   const bgMaterialRef = useRef<BackgroundGridMaterial>(null);
+const BackgroundGrid = () => {
+  const bgRef = useRef<THREE.Mesh>(null);
+  const bgMaterialRef = useRef<BackgroundGridMaterial>(null);
   
-//   return (
-//     <mesh ref={bgRef} position={[0, 0, -15]}>
-//       <planeGeometry args={[100, 100]} />
-//       < backgroundGridMaterial 
-//         ref={bgMaterialRef} 
-//         primaryColor={new THREE.Color("#0066ff")} 
-//         secondaryColor={new THREE.Color("#39ff14")}
-//       />
-//     </mesh>
-//   );
-// };
+  return (
+    <mesh ref={bgRef} position={[0, 0, -15]}>
+      <planeGeometry args={[100, 100]} />
+      < backgroundGridMaterial 
+        ref={bgMaterialRef} 
+        primaryColor={new THREE.Color("#0066ff")} 
+        secondaryColor={new THREE.Color("#39ff14")}
+      />
+    </mesh>
+  );
+};
 
 
 
@@ -589,7 +589,8 @@ const Globe = () => {
         }}>
           Global IT Solutions & Innovation
         </p>
-        <button style={{
+        <button 
+        style={{
           padding: "1rem 2.5rem",
           fontSize: "1.2rem",
           background: "linear-gradient(45deg, #0066ff, #39ff14)",

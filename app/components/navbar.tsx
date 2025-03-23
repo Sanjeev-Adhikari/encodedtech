@@ -1,84 +1,49 @@
-"use client";
-import Link from "next/link";
+// components/Navigation.tsx
+'use client';
 
-const Navbar = () => {
-  const navLinks = [
-    { name: "Home", href: "#home" },
-    { name: "Services", href: "#services" },
-    { name: "Contact", href: "#contact" },
-  ];
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+
+const Navigation = () => {
+  const [activeSection, setActiveSection] = useState('home');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['home', 'services', 'solutions', 'contact'];
+      const scrollPosition = window.scrollY + 100;
+      
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element && element.offsetTop <= scrollPosition && 
+            element.offsetTop + element.offsetHeight > scrollPosition) {
+          setActiveSection(section);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <nav style={{
-      position: "absolute",
-      top: 0,
-      width: "100%",
-      padding: "1.5rem",
-      zIndex: 2,
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      background: "transparent"
-    }}>
-      {/* Logo */}
-      <Link href="/" style={{
-        fontSize: "1.5rem",
-        fontWeight: "bold",
-        color: "white",
-        textDecoration: "none",
-        textShadow: "0 0 10px rgba(0, 255, 255, 0.5)",
-        flex: 1
-      }}>
-        YourLogo
-      </Link>
-
-      {/* Navigation Links */}
-      <div style={{
-        display: "flex",
-        gap: "2rem",
-        flex: 1,
-        justifyContent: "center"
-      }}>
-        {navLinks.map((link) => (
-          <Link
-            key={link.name}
-            href={link.href}
-            style={{
-              color: "white",
-              textDecoration: "none",
-              fontSize: "1.1rem",
-              fontWeight: 500,
-              transition: "all 0.3s ease",
-              textShadow: "0 0 10px rgba(0, 255, 255, 0.5)",
-            }}
-          >
-            {link.name}
-          </Link>
+    <nav className="fixed top-1/2 right-6 -translate-y-1/2 z-50">
+      <div className="flex flex-col gap-4">
+        {['home', 'services', 'solutions', 'contact'].map((section) => (
+          <motion.a
+            key={section}
+            href={`#${section}`}
+            className={`w-3 h-3 rounded-full border ${
+              activeSection === section 
+                ? 'bg-cyan-400 border-cyan-400 scale-150' 
+                : 'bg-transparent border-gray-400'
+            } transition-all`}
+            whileHover={{ scale: 1.5 }}
+          />
         ))}
-      </div>
-
-      {/* Join Now Button */}
-      <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-        <Link
-          href="#join"
-          style={{
-            color: "white",
-            textDecoration: "none",
-            fontSize: "1.1rem",
-            fontWeight: 500,
-            padding: "0.5rem 1.5rem",
-            borderRadius: "0.5rem",
-            background: "rgba(0, 255, 255, 0.1)",
-            border: "1px solid rgba(0, 255, 255, 0.3)",
-            transition: "all 0.3s ease",
-            textShadow: "0 0 10px rgba(0, 255, 255, 0.5)",
-          }}
-        >
-          Join Now
-        </Link>
       </div>
     </nav>
   );
 };
 
-export default Navbar;
+export default Navigation;

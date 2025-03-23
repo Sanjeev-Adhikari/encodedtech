@@ -1,0 +1,31 @@
+name: Deploy to Self-Hosted Runner
+
+on:
+  push:  # Runs on every push to the repository
+    branches:
+      - main  # Change this to match your deployment branch (e.g., 'develop', 'staging')
+#  workflow_dispatch:  # Allows manual execution from GitHub Actions UI
+
+jobs:
+  deploy:
+    runs-on: self-hosted  # Runs on your self-hosted GitHub Actions runner
+    steps:
+      - name: Pulling new code
+        run: |
+          cd /root/encodedtech
+          git pull
+
+      - name: Build Project
+        run: |
+          echo "building project"
+          cd /root/encodedtech
+          npm run build
+
+      - name: Restart Application using PM2
+        run: |
+          echo "pm2 restart"
+          pm2 restart encodedtech
+
+      - name: Show PM2 Status
+        run: pm2 status
+~

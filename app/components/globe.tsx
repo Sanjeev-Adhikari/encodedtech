@@ -253,7 +253,7 @@ const FuturisticNetwork = () => {
   const dataPathMaterialRef = useRef<DataPathMaterial>(null);
   const nodeMaterialRefs = useRef<(THREE.ShaderMaterial | null)[]>([]);
   const nodeCount = 280;
-  const connectionRadius = 6.0;
+  const connectionRadius = 8;
   const maxConnections = 10;
 
   // Create nodes and connections
@@ -277,7 +277,7 @@ const FuturisticNetwork = () => {
         position: new THREE.Vector3(x, y, z),
         connections: 0,
         importance: Math.random(),
-        speed: 0.2 + Math.random() * 0.8,
+        speed: 0.1 + Math.random() * 0.8,
         phase: Math.random() * Math.PI * 2,
       });
     }
@@ -510,15 +510,7 @@ const AdvancedGlobeComponent = () => {
         <hologramMaterial ref={hologramMaterialRef} />
       </mesh>
       
-      <mesh>
-        <sphereGeometry args={[0.95, 32, 32]} />
-        <meshBasicMaterial color="#0044ff" transparent opacity={0} />
-      </mesh>
-      
-      <mesh>
-        <sphereGeometry args={[1.05, 32, 32]} />
-        <meshBasicMaterial color="#39ff14" transparent opacity={0} />
-      </mesh>
+     
       
       <OrbitControls
         enableZoom={false}

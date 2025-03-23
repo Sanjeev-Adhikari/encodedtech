@@ -1,8 +1,8 @@
 "use client";
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useRef, useState, useMemo, useEffect, JSX } from "react";
 import * as THREE from "three";
-import { Canvas, useFrame, extend } from "@react-three/fiber";
-import { OrbitControls, useTexture } from "@react-three/drei";
+import { Canvas, useFrame, extend  } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
 
 // Custom shader for glowing data paths
 class DataPathMaterial extends THREE.ShaderMaterial {
@@ -141,7 +141,7 @@ class HologramMaterial extends THREE.ShaderMaterial {
       depthWrite: false,
       blending: THREE.AdditiveBlending,
     });
-  }
+  }   
 }
 
 // Custom material for background grid lines
@@ -230,13 +230,31 @@ class BackgroundGridMaterial extends THREE.ShaderMaterial {
 // Register custom materials
 extend({ DataPathMaterial, NodeMaterial, HologramMaterial, BackgroundGridMaterial });
 
+// Update your type declaration to properly type the custom materials
+// Properly type the extended elements
+declare module "@react-three/fiber" {
+  interface ThreeElements {
+    dataPathMaterial: JSX.IntrinsicElements['mesh'] 
+    nodeMaterial: JSX.IntrinsicElements['mesh'] & {
+      color?: THREE.Color;
+      pulseColor?: THREE.Color;
+      connectionCount?: number;
+    };
+    hologramMaterial: JSX.IntrinsicElements['mesh'] 
+    backgroundGridMaterial: JSX.IntrinsicElements['mesh'] & {
+      primaryColor?: THREE.Color;
+      secondaryColor?: THREE.Color;
+    };
+  }
+}
 // Advanced network with data flow
 const FuturisticNetwork = () => {
   const networkRef = useRef<THREE.Group>(null);
-  const dataPathMaterialRef = useRef<any>(null);
-  const nodeCount = 180;
-  const connectionRadius = 4.0;
-  const maxConnections = 5;
+  const dataPathMaterialRef = useRef<DataPathMaterial>(null);
+  const nodeMaterialRefs = useRef<(THREE.ShaderMaterial | null)[]>([]);
+  const nodeCount = 280;
+  const connectionRadius = 6.0;
+  const maxConnections = 10;
 
   // Create nodes and connections
   const { nodes, connections, lineIndices } = useMemo(() => {
@@ -335,6 +353,11 @@ const FuturisticNetwork = () => {
     return geometry;
   }, [connections, nodes, lineIndices]);
 
+  // Initialize nodeMaterialRefs array
+  useEffect(() => {
+    nodeMaterialRefs.current = nodes.map(() => null);
+  }, [nodes]);
+
   // Animation for network elements
   useFrame(({ clock }) => {
     const time = clock.getElapsedTime();
@@ -350,7 +373,7 @@ const FuturisticNetwork = () => {
     }
     
     nodes.forEach((node, i) => {
-      const nodeMaterial = networkRef.current?.children[i + 1]?.material as any;
+      const nodeMaterial = nodeMaterialRefs.current[i];
       if (nodeMaterial?.uniforms) {
         nodeMaterial.uniforms.time.value = time;
         nodeMaterial.uniforms.connectionCount.value = node.connections;
@@ -361,17 +384,18 @@ const FuturisticNetwork = () => {
   return (
     <group ref={networkRef}>
       <lineSegments geometry={lineGeometry}>
-        <dataPathMaterial ref={dataPathMaterialRef} />
+         <dataPathMaterial ref={dataPathMaterialRef} />
       </lineSegments>
       
       {nodes.map((node, i) => (
         <mesh key={`node-${i}`} position={node.position}>
-          <sphereGeometry args={[0.04 + 0.02 * Math.min(node.connections/3, 1), 16, 16]} />
+          <sphereGeometry args={[0.04 + 0.02 * Math.min(node.connections / 3, 1), 16, 16]} />
           <nodeMaterial 
-            color={new THREE.Color("#39ff14")} 
-            pulseColor={new THREE.Color("#00ffff")} 
-            connectionCount={node.connections}
-          />
+  ref={(ref: NodeMaterial | null) => (nodeMaterialRefs.current[i] = ref)}
+  color={new THREE.Color("#39ff14")} 
+  pulseColor={new THREE.Color("#00ffff")} 
+  connectionCount={node.connections}
+/>
         </mesh>
       ))}
       
@@ -396,8 +420,14 @@ const FuturisticNetwork = () => {
   );
 };
 
-// Data packet component
-const DataPacket = ({ startPosition, endPosition, speed, initialOffset }) => {
+interface DataPacketProps {
+  startPosition: THREE.Vector3;
+  endPosition: THREE.Vector3;
+  speed: number;
+  initialOffset: number;
+}
+
+const DataPacket = ({ startPosition, endPosition, speed, initialOffset }: DataPacketProps)  => {
   const packetRef = useRef<THREE.Mesh>(null);
   const [progress, setProgress] = useState(initialOffset);
   
@@ -430,12 +460,12 @@ const DataPacket = ({ startPosition, endPosition, speed, initialOffset }) => {
 // Background grid component
 const BackgroundGrid = () => {
   const bgRef = useRef<THREE.Mesh>(null);
-  const bgMaterialRef = useRef<any>(null);
+  const bgMaterialRef = useRef<BackgroundGridMaterial>(null);
   
   return (
     <mesh ref={bgRef} position={[0, 0, -15]}>
       <planeGeometry args={[100, 100]} />
-      <backgroundGridMaterial 
+      < backgroundGridMaterial 
         ref={bgMaterialRef} 
         primaryColor={new THREE.Color("#0066ff")} 
         secondaryColor={new THREE.Color("#39ff14")}
@@ -499,8 +529,11 @@ const BackgroundRays = () => {
     if (raysRef.current) {
       raysRef.current.rotation.z = time * 0.02;
       
-      const material = raysRef.current.children[0].material as THREE.LineBasicMaterial;
-      if (material) {
+      // Use a more specific type assertion for the child object
+      const lineSegments = raysRef.current.children[0] as THREE.LineSegments;
+      if (lineSegments.material) {
+        // Now we can safely access the material property
+        const material = lineSegments.material as THREE.LineBasicMaterial;
         material.opacity = 0.2 + 0.1 * Math.sin(time * 0.5);
       }
     }
@@ -523,7 +556,7 @@ const BackgroundRays = () => {
 // Advanced globe component
 const AdvancedGlobeComponent = () => {
   const globeRef = useRef<THREE.Mesh>(null);
-  const hologramMaterialRef = useRef<any>(null);
+  const hologramMaterialRef = useRef<HologramMaterial>(null);
   const rotationSpeed = useRef(0.1);
 
   useFrame(({ clock }) => {
@@ -556,12 +589,12 @@ const AdvancedGlobeComponent = () => {
       
       <mesh>
         <sphereGeometry args={[0.95, 32, 32]} />
-        <meshBasicMaterial color="#0044ff" transparent opacity={0.1} />
+        <meshBasicMaterial color="#0044ff" transparent opacity={0} />
       </mesh>
       
       <mesh>
         <sphereGeometry args={[1.05, 32, 32]} />
-        <meshBasicMaterial color="#39ff14" transparent opacity={0.05} />
+        <meshBasicMaterial color="#39ff14" transparent opacity={0} />
       </mesh>
       
       <OrbitControls
@@ -569,10 +602,10 @@ const AdvancedGlobeComponent = () => {
         enablePan={false}
         enableRotate={false}
         zoomSpeed={0.6}
-      
+    
         panSpeed={0.5}
         rotateSpeed={0.2}
-        minDistance={1.5}
+        minDistance={0.5  }
         maxDistance={5}
       />
     </>
@@ -601,7 +634,7 @@ const Globe = () => {
           width: "100%",
           height: "100%",
         }}
-        camera={{ position: [0, 0, 2.1], fov: 75, near: 0.1, far: 1000 }}
+        camera={{ position: [0, 0, 1.8], fov: 80, near: 0.1, far: 1000 }}
         gl={{ 
           alpha: false, 
           antialias: true,

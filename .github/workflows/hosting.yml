@@ -12,13 +12,14 @@ jobs:
     steps:
       - name: Pulling new code
         run: |
-          cd /root/encodedtech
+          cd /home/github-runner/encodedtech
+
           git pull
 
       - name: Build Project
         run: |
           echo "building project"
-          cd /root/encodedtech
+          cd /home/github-runner/encodedtech
           npm run build
 
       - name: Restart Application using PM2
@@ -28,3 +29,4 @@ jobs:
 
       - name: Show PM2 Status
         run: pm2 status
+        

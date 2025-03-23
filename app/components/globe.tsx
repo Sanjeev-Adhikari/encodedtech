@@ -230,7 +230,7 @@ class BackgroundGridMaterial extends THREE.ShaderMaterial {
 // Register custom materials
 extend({ DataPathMaterial, NodeMaterial, HologramMaterial, BackgroundGridMaterial });
 
-// Update your type declaration to properly type the custom materials
+
 // Properly type the extended elements
 declare module "@react-three/fiber" {
   interface ThreeElements {
@@ -404,7 +404,7 @@ const FuturisticNetwork = () => {
         
         const fromPos = nodes[connection.from].position;
         const toPos = nodes[connection.to].position;
-        const packetSpeed = 0.6 + nodes[connection.from].importance * 0.8;
+        const packetSpeed = 0.2 + nodes[connection.from].importance * 0.6;
         
         return (
           <DataPacket 

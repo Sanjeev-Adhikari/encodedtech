@@ -278,7 +278,7 @@ const FuturisticNetwork = () => {
         connections: 0,
         importance: Math.random(),
 
-        phase: Math.random() * Math.PI * 2,
+        phase: Math.random() * Math.PI * 8,
       });
     }
 
@@ -404,7 +404,7 @@ const FuturisticNetwork = () => {
 
         const fromPos = nodes[connection.from].position;
         const toPos = nodes[connection.to].position;
-        const packetSpeed = 0.2 + nodes[connection.from].importance * 0.6;
+        const packetSpeed = 1.4 + nodes[connection.from].importance * 1.8;
 
         return (
           <DataPacket
@@ -594,7 +594,7 @@ const Globe = () => {
             pointerEvents: "auto",
             boxShadow: "0 0 30px rgba(0, 102, 255, 0.4)",
           }}>
-          Explore  Solutions
+          Explore  Us
         </button>
       </div>
     </div>
